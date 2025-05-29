@@ -29,13 +29,24 @@ function startListening() {
 }
 
 // Camera Access
+let cameraStream;
+
 function startCamera() {
   const video = document.getElementById('camera');
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
       video.srcObject = stream;
+      cameraStream = stream;
     })
     .catch(err => {
       alert("Camera access denied: " + err);
     });
+}
+
+function stopCamera() {
+  const video = document.getElementById('camera');
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    video.srcObject = null;
+  }
 }
