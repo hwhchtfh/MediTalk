@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediTalk</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body onload="startCamera()">
+  <div class="container">
+    <h1>MediTalk</h1>
+
+    <textarea id="inputText" placeholder="Enter medical phrase..."></textarea>
+
+    <select id="languageSelect">
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="ar">Arabic</option>
+      <option value="id">Indonesian</option>
+      <option value="zh-CN">Chinese</option>
+    </select>
+
+    <button onclick="translateText()">Translate</button>
+    <button onclick="startListening()">🎤 Speak</button>
+
+    <div id="outputText"></div>
+
+    <h3>Camera View (for sign language / future OCR):</h3>
+    <video id="camera" autoplay width="100%" style="margin-top: 10px;"></video>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

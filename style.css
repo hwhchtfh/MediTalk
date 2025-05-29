@@ -1,0 +1,38 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f3f6f9;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.container {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2a7de1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#outputText {
+  margin-top: 20px;
+  font-weight: bold;
+}
