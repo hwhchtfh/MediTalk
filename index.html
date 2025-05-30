@@ -8,45 +8,48 @@
 </head>
 <body>
   <div class="container">
-    <h1>MediTalk: Translation, Voice, Sign Language & AI Chat</h1>
+    <h1>MediTalk: Medical Translation & AI Assistant</h1>
 
-    <!-- 🔤 Text Input -->
-    <textarea id="inputText" placeholder="Enter medical phrase..." rows="3" style="width: 100%; margin-top: 10px;"></textarea>
-
-    <!-- 🌍 Language Selector -->
+    <textarea id="inputText" placeholder="Enter medical phrase..." rows="3"></textarea>
     <select id="languageSelect">
-      <option value="es">Spanish</option>
+      <option value="en">English</option>
+      <option value="ar">Arabic</option>
       <option value="fr">French</option>
       <option value="de">German</option>
-      <option value="ar">Arabic</option>
+      <option value="es">Spanish</option>
       <option value="id">Indonesian</option>
+      <option value="tr">Turkish</option>
       <option value="zh-CN">Chinese</option>
       <option value="ru">Russian</option>
       <option value="hi">Hindi</option>
-      <option value="tr">Turkish</option>
       <option value="fa">Persian</option>
       <option value="bn">Bengali</option>
-    </select>
+    </select><br>
 
-    <!-- 🔘 Buttons -->
-    <br />
     <button onclick="translateText()">Translate</button>
     <button onclick="startListening()">🎤 Speak</button>
+    <button onclick="speakTranslation()">🔊 Speak Translation</button>
     <button onclick="simulateAIChat()">🤖 Ask AI</button>
+    <button onclick="toggleDarkMode()">🌓 Dark Mode</button>
+    <button onclick="clearAll()">❌ Clear All</button>
 
-    <!-- 📝 Output -->
-    <div id="outputText" style="margin-top: 10px; font-weight: bold;"></div>
+    <div class="camera-controls">
+      <h3>Sign Language & Image Translation</h3>
+      <button onclick="startCamera()">▶️ Start Camera</button>
+      <button onclick="stopCamera()">⏹️ Stop Camera</button>
+      <button onclick="capturePhoto()">📷 Capture Photo</button>
+      <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload()" />
+    </div>
 
-    <!-- ✋ Sign Language Section -->
-    <h3 style="margin-top:30px;">Camera View (for sign language recognition):</h3>
-    <button onclick="startCamera()">📷 Start Camera</button>
-    <button onclick="stopCamera()">❌ Stop Camera</button>
-    <video id="camera" autoplay playsinline style="width: 100%; border: 1px solid #ccc;"></video>
-    <canvas id="canvas" style="position:absolute; top:0; left:0;"></canvas>
-    <p id="status">Detecting hand...</p>
+    <div class="camera-box">
+      <video id="camera" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+      <p id="status">Camera is off</p>
+    </div>
+
+    <div id="outputText" class="output-box"></div>
   </div>
 
-  <!-- 🧠 Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
