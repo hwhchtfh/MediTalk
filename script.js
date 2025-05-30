@@ -1,41 +1,18 @@
-let cameraStream;
-const videoElement = document.getElementById('camera');
-const canvasElement = document.getElementById('canvas');
-const canvasCtx = canvasElement.getContext('2d');
-const statusText = document.getElementById('status');
+let cameraInstance = null;
+let cameraRunning = false;
 
-// 📷 Start camera
-function startCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-      videoElement.srcObject = stream;
-      cameraStream = stream;
-    })
-    .catch(err => {
-      alert("Camera error: " + err);
-    });
-}
-
-// ❌ Stop camera
-function stopCamera() {
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(track => track.stop());
-    videoElement.srcObject = null;
-  }
-}
-
-// 🌐 Translate text
+// 🌐 Translation
 function translateText() {
   const text = document.getElementById("inputText").value;
   const lang = document.getElementById("languageSelect").value;
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURI(text)}`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
 
   fetch(url)
     .then(response => response.json())
     .then(data => {
       document.getElementById("outputText").innerText = data[0][0][0];
     })
-    .catch(err => {
+    .catch(() => {
       document.getElementById("outputText").innerText = "Error translating.";
     });
 }
@@ -50,7 +27,45 @@ function startListening() {
   recognition.start();
 }
 
-// ✋ Hand detection via MediaPipe
+// 🔊 Speak out translation
+function speakTranslation() {
+  const text = document.getElementById("outputText").innerText;
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+}
+
+// ❌ Clear all fields
+function clearAll() {
+  document.getElementById("inputText").value = "";
+  document.getElementById("outputText").innerText = "";
+  document.getElementById("status").innerText = "Camera is off";
+}
+
+// 🤖 AI Chat
+function simulateAIChat() {
+  const input = document.getElementById("inputText").value.trim().toLowerCase();
+  let response = "🤖 I don't understand that yet.";
+
+  if (input.includes("fever")) {
+    response = "🤖 AI: Monitor temperature and stay hydrated.";
+  } else if (input.includes("headache")) {
+    response = "🤖 AI: Try rest, hydration, and paracetamol.";
+  }
+
+  document.getElementById("outputText").innerText = response;
+}
+
+// 🌙 Dark Mode
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+}
+
+// ✋ Sign Language Setup
+const videoElement = document.getElementById('camera');
+const canvasElement = document.getElementById('canvas');
+const canvasCtx = canvasElement.getContext('2d');
+const statusText = document.getElementById('status');
+
 const hands = new Hands({
   locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
@@ -82,15 +97,17 @@ hands.onResults((results) => {
       const y4 = landmarks[4].y;
       const y12 = landmarks[12].y;
 
+      let gesture = "✋ Hand detected";
       if (Math.abs(y0 - y8) < 0.05 && Math.abs(y0 - y12) < 0.05) {
-        statusText.innerText = "✊ Gesture: Hello";
+        gesture = "✊ Gesture: Hello";
       } else if (y8 < y0 && y4 < y0) {
-        statusText.innerText = "✌️ Gesture: Yes";
+        gesture = "✌️ Gesture: Yes";
       } else if (y8 > y0 && y12 > y0) {
-        statusText.innerText = "👎 Gesture: No";
-      } else {
-        statusText.innerText = "✋ Hand detected";
+        gesture = "👎 Gesture: No";
       }
+
+      statusText.innerText = gesture;
+      document.getElementById("outputText").innerText = "Sign says: " + gesture;
     }
   } else {
     statusText.innerText = "No hand detected";
@@ -99,28 +116,43 @@ hands.onResults((results) => {
   canvasCtx.restore();
 });
 
-const camera = new Camera(videoElement, {
-  onFrame: async () => {
-    await hands.send({ image: videoElement });
-  },
-  width: 640,
-  height: 480
-});
+// 📸 Start/Stop Camera
+function startCamera() {
+  if (cameraRunning) return;
+  cameraInstance = new Camera(videoElement, {
+    onFrame: async () => {
+      await hands.send({ image: videoElement });
+    },
+    width: 640,
+    height: 480
+  });
+  cameraInstance.start();
+  cameraRunning = true;
+  statusText.innerText = "Camera running...";
+}
 
-camera.start();
-
-// 🤖 Simulated AI Chatbot
-function simulateAIChat() {
-  const input = document.getElementById("inputText").value.trim().toLowerCase();
-  let response = "🤖 I'm not sure how to help with that.";
-
-  if (input.includes("fever")) {
-    response = "🤖 AI: For fever, stay hydrated and monitor your temperature.";
-  } else if (input.includes("headache")) {
-    response = "🤖 AI: Headaches can be caused by dehydration or stress.";
-  } else if (input.includes("diabetes")) {
-    response = "🤖 AI: Diabetes management includes a balanced diet and insulin checks.";
+function stopCamera() {
+  if (cameraInstance) {
+    cameraInstance.stop();
+    cameraRunning = false;
+    statusText.innerText = "Camera is off";
   }
+}
 
-  document.getElementById("outputText").innerText = response;
+// 📷 Capture photo from camera
+function capturePhoto() {
+  const canvas = document.createElement("canvas");
+  canvas.width = videoElement.videoWidth;
+  canvas.height = videoElement.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(videoElement, 0, 0);
+  const imageDataUrl = canvas.toDataURL("image/png");
+  document.getElementById("outputText").innerText = "Image captured. (Translation pending)";
+}
+
+// 🖼️ Handle image upload
+function handleImageUpload() {
+  const file = document.getElementById("imageUpload").files[0];
+  if (!file) return;
+  document.getElementById("outputText").innerText = "Image uploaded. (OCR translation feature coming soon)";
 }
