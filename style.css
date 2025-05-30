@@ -1,104 +1,107 @@
+/* خلفية مرنة بطابع طبي */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f5f8fa;
   margin: 0;
-  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), 
+              linear-gradient(135deg, #e6f0ff, #cbe3f9);
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
   color: #333;
-  transition: background 0.3s, color 0.3s;
 }
 
-.container {
-  max-width: 850px;
+/* الحاوية */
+.app-container {
+  max-width: 960px;
   margin: auto;
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.1);
 }
 
+/* العناوين */
 h1 {
   text-align: center;
-  color: #003366;
+  color: #0077cc;
+  font-size: 28px;
+}
+h2 {
+  margin-top: 30px;
+  color: #005fa3;
 }
 
-textarea {
+/* الحقول */
+textarea, input[type="text"], select {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  resize: none;
-}
-
-select, button, input[type="file"] {
-  padding: 10px 15px;
-  margin: 5px 5px 15px 0;
-  font-size: 15px;
+  padding: 10px;
+  margin: 10px 0 16px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  cursor: pointer;
+  font-size: 16px;
+  resize: vertical;
 }
 
+/* الأزرار */
 button {
-  background-color: #007BFF;
+  background-color: #0077cc;
   color: white;
+  padding: 10px 16px;
+  margin: 6px 4px;
   border: none;
-  transition: background 0.2s;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
 }
-
+button i {
+  margin-right: 6px;
+}
 button:hover {
-  background-color: #0056b3;
+  background-color: #005fa3;
 }
 
-.camera-controls {
-  margin-top: 20px;
-}
-
-.camera-box {
-  position: relative;
-  margin-top: 10px;
-}
-
-#camera {
+/* فيديو/كاميرا */
+video, canvas {
   width: 100%;
+  max-height: 240px;
   border-radius: 8px;
-  border: 1px solid #aaa;
+  margin: 10px 0;
 }
 
-#canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* AI سند */
+#sanadChat {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f4faff;
+}
+#chatBox {
+  height: 150px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+#sanadChat input {
+  width: 80%;
+}
+#sanadChat button {
+  width: 18%;
 }
 
-#status {
-  margin-top: 10px;
-  font-weight: bold;
-  color: #007BFF;
+/* إخفاء */
+.hidden {
+  display: none;
 }
 
-.output-box {
+/* مسح شامل */
+.clear-btn {
+  background-color: #999;
   margin-top: 20px;
-  padding: 15px;
-  background: #e6f3ff;
-  border-left: 4px solid #007BFF;
-  border-radius: 8px;
-  white-space: pre-wrap;
 }
-
-/* Dark Mode */
-.dark-mode {
-  background-color: #121212;
-  color: #eeeeee;
-}
-
-.dark-mode .container {
-  background-color: #1f1f1f;
-  color: #eeeeee;
-}
-
-.dark-mode .output-box {
-  background-color: #2d3b45;
-  border-left-color: #66ccff;
+.clear-btn:hover {
+  background-color: #666;
 }
