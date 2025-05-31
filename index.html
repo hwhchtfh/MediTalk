@@ -1,79 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>MediTalk</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
 </head>
 <body>
-  <div class="app-container">
-    <h1 class="app-title">🩺 MediTalk - Communication for Better Care</h1>
+  <header>
+    <h1>🩺 MediTalk Medical Translator</h1>
+  </header>
 
-    <div class="section-row">
-      <!-- 🔹 Text Translation -->
-      <div class="translate-box">
-        <h2>🌐 Text Translation</h2>
-        <select id="languageSelect">
-          <option value="en">English</option>
-          <option value="ar">Arabic</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
-          <option value="zh-CN">Chinese</option>
-          <option value="id">Indonesian</option>
-          <option value="tr">Turkish</option>
-        </select>
-        <textarea id="textInput" placeholder="Enter medical phrase..."></textarea>
-        <div class="button-row">
-          <button onclick="translateText()">Translate</button>
-          <button onclick="startListening()">🎙️ Speak</button>
-          <button onclick="speakTranslation()">🎧 Speak Translation</button>
-          <button onclick="openSanadChat()">🤖 Ask AI</button>
-        </div>
-        <div id="translatedOutput" class="output-box"></div>
-        <div class="button-row">
-          <button onclick="toggleDarkMode()">🌗 Dark Mode</button>
-          <button onclick="clearAll()">❌ Clear All</button>
-        </div>
+  <main>
+    <!-- 🔤 Text Translation Section -->
+    <section class="translation-panel">
+      <h2>Text Translator 🌐</h2>
+      <textarea id="textInput" placeholder="Enter your text here..."></textarea>
+      <select id="languageSelect">
+        <option value="ar">Arabic</option>
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="tr">Turkish</option>
+        <option value="id">Indonesian</option>
+        <option value="ru">Russian</option>
+        <option value="zh">Chinese</option>
+        <option value="de">German</option>
+        <option value="ms">Malay</option>
+        <option value="fa">Persian</option>
+        <option value="ur">Urdu</option>
+        <option value="bn">Bengali</option>
+      </select>
+      <div class="buttons">
+        <button onclick="translateText()">Translate</button>
+        <button onclick="startListening()">🎤 Voice</button>
+        <button onclick="speakTranslation()">🔊 Speak</button>
+        <button onclick="clearAll()">🧹 Clear</button>
       </div>
-
-      <!-- 🔹 Sign Language Translation -->
-      <div class="sign-box">
-        <h2>🤟 Sign Language</h2>
-        <div class="video-wrapper">
-          <video id="cameraFeed" autoplay playsinline></video>
-          <canvas id="snapshotCanvas"></canvas>
-        </div>
-        <div class="button-row">
-          <button onclick="startCamera()">▶️ Start Camera</button>
-          <button onclick="stopCamera()">⏹ Stop Camera</button>
-          <button onclick="takeSnapshot()">📸 Capture Photo</button>
-        </div>
-        <div id="signTextOutput" class="output-box"></div>
-        <button onclick="clearSignText()">🧹 Clear Sign Text</button>
-        <input type="file" id="imageUpload" onchange="translateImage()" />
-        <div id="ocrResult" class="output-box"></div>
+      <div class="output-box">
+        <h3>Translated Output:</h3>
+        <p id="translatedOutput"></p>
       </div>
-    </div>
+    </section>
 
-    <!-- 🔹 Braille Prescription -->
-    <div class="braille-section">
-      <h2>📝 Braille Medical Instructions</h2>
-      <textarea id="brailleInput" placeholder="Enter drug usage instructions..."></textarea>
-      <button onclick="printBraille()">🖨 Print in Braille</button>
-    </div>
-
-    <!-- 🔹 Sanad AI Chat Popup -->
-    <div id="sanadChat" class="chat-popup">
-      <div class="chat-header">
-        <span>🤖 Sanad AI Assistant</span>
-        <button onclick="closeSanadChat()">✖️</button>
+    <!-- 🧠 AI Chat Section -->
+    <section class="ai-chat-panel">
+      <h2>Ask Sanad 🤖</h2>
+      <button onclick="openSanadChat()">Open AI Chat</button>
+      <div id="aiChatBox" style="display:none;">
+        <div id="chatMessages" class="chat-box"></div>
+        <input id="chatInput" placeholder="Ask Sanad something..." />
+        <button onclick="sendToSanad()">Send</button>
       </div>
-      <div id="chatMessages" class="chat-body"></div>
-      <input type="text" id="chatInput" placeholder="Ask Sanad..." />
-      <button onclick="sendSanadChat()">Send</button>
-    </div>
-  </div>
+    </section>
+
+    <!-- 🖐️ Sign Language Recognition Section -->
+    <section class="sign-panel">
+      <h2>Sign Language Translation 🖐️</h2>
+      <video id="cameraFeed" autoplay muted></video>
+      <div class="buttons">
+        <button onclick="startCamera()">📷 Start Camera</button>
+        <button onclick="stopCamera()">❌ Stop Camera</button>
+        <button onclick="takeSnapshot()">📸 Capture</button>
+        <button onclick="clearAll()">🧼 Clear</button>
+      </div>
+      <canvas id="snapshotCanvas" style="display:none;"></canvas>
+      <div class="output-box">
+        <h3>Detected Sign Language:</h3>
+        <p id="signTextOutput"></p>
+      </div>
+    </section>
+
+    <!-- 🖼️ Image Upload OCR -->
+    <section class="ocr-panel">
+      <h2>Image Translation 📸</h2>
+      <input type="file" id="imageUpload" accept="image/*" onchange="translateImage()">
+      <p id="ocrResult"></p>
+    </section>
+
+    <!-- 🧾 Braille Prescription -->
+    <section class="braille-panel">
+      <h2>Braille Prescription 🧾</h2>
+      <textarea id="brailleInput" placeholder="Enter medical instructions or prescription..."></textarea>
+      <button onclick="printBraille()">🖨️ Print in Braille</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>Created by MediTalk Team © 2025</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
