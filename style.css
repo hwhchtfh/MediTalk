@@ -1,107 +1,100 @@
-/* خلفية مرنة بطابع طبي */
 body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #f2f9fc, #e6f4ff);
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), 
-              linear-gradient(135deg, #e6f0ff, #cbe3f9);
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
-  color: #333;
+  padding: 0;
+  color: #222;
 }
 
-/* الحاوية */
-.app-container {
-  max-width: 960px;
+.container {
+  max-width: 800px;
   margin: auto;
-  padding: 20px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 14px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.1);
-}
-
-/* العناوين */
-h1 {
-  text-align: center;
-  color: #0077cc;
-  font-size: 28px;
-}
-h2 {
-  margin-top: 30px;
-  color: #005fa3;
-}
-
-/* الحقول */
-textarea, input[type="text"], select {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  resize: vertical;
-}
-
-/* الأزرار */
-button {
-  background-color: #0077cc;
-  color: white;
-  padding: 10px 16px;
-  margin: 6px 4px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-button i {
-  margin-right: 6px;
-}
-button:hover {
-  background-color: #005fa3;
-}
-
-/* فيديو/كاميرا */
-video, canvas {
-  width: 100%;
-  max-height: 240px;
-  border-radius: 8px;
-  margin: 10px 0;
-}
-
-/* AI سند */
-#sanadChat {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  background-color: #f4faff;
-}
-#chatBox {
-  height: 150px;
-  overflow-y: auto;
-  margin-bottom: 8px;
-  padding: 8px;
-  background: #fff;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-#sanadChat input {
-  width: 80%;
-}
-#sanadChat button {
-  width: 18%;
-}
-
-/* إخفاء */
-.hidden {
-  display: none;
-}
-
-/* مسح شامل */
-.clear-btn {
-  background-color: #999;
+  padding: 30px;
+  background: #ffffffdd;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
   margin-top: 20px;
 }
-.clear-btn:hover {
-  background-color: #666;
+
+h1, h2 {
+  text-align: center;
+  color: #0074a8;
+}
+
+textarea, select, input[type="text"], input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 14px;
+  margin: 5px;
+  background: #0074a8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #005f87;
+}
+
+.button-row {
+  text-align: center;
+  margin-top: 10px;
+}
+
+#cameraFeed {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+#translatedOutput, #ocrResult {
+  margin-top: 10px;
+  background: #f0f0f0;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+}
+
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: white;
+  border: 2px solid #0074a8;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  padding: 10px;
+}
+
+.chat-popup.active {
+  display: block;
+}
+
+.chat-header {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-body {
+  height: 200px;
+  overflow-y: auto;
+  margin: 10px 0;
+  background: #f9f9f9;
+  padding: 8px;
+  border-radius: 6px;
 }
