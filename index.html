@@ -3,83 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MediTalk - Medical Translator</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <title>MediTalk</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-container">
-    <h1>MediTalk 🩺</h1>
+    <h1 class="app-title">🩺 MediTalk - Communication for Better Care</h1>
 
-    <!-- ترجمة النصوص -->
-    <section class="translator-section">
-      <h2>Text Translator 🌍</h2>
-      <textarea id="textInput" placeholder="Enter text..."></textarea>
-      <select id="languageSelect">
-        <option value="en">English</option>
-        <option value="ar">العربية</option>
-        <option value="fr">Français</option>
-        <option value="de">Deutsch</option>
-        <option value="id">Bahasa</option>
-        <option value="ru">Русский</option>
-        <option value="tr">Türkçe</option>
-      </select>
-      <button onclick="translateText()"><i class="fas fa-language"></i> Translate</button>
-      <p id="translatedOutput"></p>
-    </section>
-
-    <!-- لغة الإشارة -->
-    <section class="sign-section">
-      <h2>Sign Language 🧏‍♀️</h2>
-      <video id="signVideo" autoplay muted></video>
-      <div class="btn-group">
-        <button onclick="startSignCamera()"><i class="fas fa-play"></i> Start Camera</button>
-        <button onclick="stopSignCamera()"><i class="fas fa-stop"></i> Stop Camera</button>
-        <button onclick="captureSign()"><i class="fas fa-hand"></i> Capture Sign</button>
-        <button onclick="clearSignText()"><i class="fas fa-eraser"></i> Clear</button>
+    <div class="section-row">
+      <!-- 🔹 Text Translation -->
+      <div class="translate-box">
+        <h2>🌐 Text Translation</h2>
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="ar">Arabic</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="zh-CN">Chinese</option>
+          <option value="id">Indonesian</option>
+          <option value="tr">Turkish</option>
+        </select>
+        <textarea id="textInput" placeholder="Enter medical phrase..."></textarea>
+        <div class="button-row">
+          <button onclick="translateText()">Translate</button>
+          <button onclick="startListening()">🎙️ Speak</button>
+          <button onclick="speakTranslation()">🎧 Speak Translation</button>
+          <button onclick="openSanadChat()">🤖 Ask AI</button>
+        </div>
+        <div id="translatedOutput" class="output-box"></div>
+        <div class="button-row">
+          <button onclick="toggleDarkMode()">🌗 Dark Mode</button>
+          <button onclick="clearAll()">❌ Clear All</button>
+        </div>
       </div>
-      <p id="signTextOutput"></p>
-    </section>
 
-    <!-- AI Sanad -->
-    <section class="ai-section">
-      <h2>Need Help? Ask <strong>Sanad 🤖</strong></h2>
-      <button onclick="toggleSanad()"><i class="fas fa-robot"></i> Ask Sanad</button>
-      <div id="sanadChat" class="hidden">
-        <div id="chatBox"></div>
-        <input type="text" id="sanadInput" placeholder="Ask something..."/>
-        <button onclick="sendToSanad()"><i class="fas fa-paper-plane"></i></button>
-        <button onclick="clearSanadChat()"><i class="fas fa-trash-alt"></i></button>
+      <!-- 🔹 Sign Language Translation -->
+      <div class="sign-box">
+        <h2>🤟 Sign Language</h2>
+        <div class="video-wrapper">
+          <video id="cameraFeed" autoplay playsinline></video>
+          <canvas id="snapshotCanvas"></canvas>
+        </div>
+        <div class="button-row">
+          <button onclick="startCamera()">▶️ Start Camera</button>
+          <button onclick="stopCamera()">⏹ Stop Camera</button>
+          <button onclick="takeSnapshot()">📸 Capture Photo</button>
+        </div>
+        <div id="signTextOutput" class="output-box"></div>
+        <button onclick="clearSignText()">🧹 Clear Sign Text</button>
+        <input type="file" id="imageUpload" onchange="translateImage()" />
+        <div id="ocrResult" class="output-box"></div>
       </div>
-    </section>
+    </div>
 
-    <!-- تصوير مباشر -->
-    <section class="camera-section">
-      <h2>Live Camera 📸</h2>
-      <video id="cameraFeed" autoplay></video>
-      <div class="btn-group">
-        <button onclick="startCamera()"><i class="fas fa-video"></i> Start</button>
-        <button onclick="stopCamera()"><i class="fas fa-stop-circle"></i> Stop</button>
-        <button onclick="takeSnapshot()"><i class="fas fa-camera"></i> Capture</button>
+    <!-- 🔹 Braille Prescription -->
+    <div class="braille-section">
+      <h2>📝 Braille Medical Instructions</h2>
+      <textarea id="brailleInput" placeholder="Enter drug usage instructions..."></textarea>
+      <button onclick="printBraille()">🖨 Print in Braille</button>
+    </div>
+
+    <!-- 🔹 Sanad AI Chat Popup -->
+    <div id="sanadChat" class="chat-popup">
+      <div class="chat-header">
+        <span>🤖 Sanad AI Assistant</span>
+        <button onclick="closeSanadChat()">✖️</button>
       </div>
-      <canvas id="snapshotCanvas"></canvas>
-    </section>
-
-    <!-- ترجمة الصور -->
-    <section class="ocr-section">
-      <h2>Image/Document Translation 🖼️</h2>
-      <input type="file" id="imageUpload" accept="image/*" onchange="translateImage()" />
-      <p id="ocrResult"></p>
-    </section>
-
-    <!-- وصفة طبية -->
-    <section class="prescription-section">
-      <h2>Braille Medical Prescription 🖨️</h2>
-      <textarea id="brailleInput" placeholder="Write prescription..."></textarea>
-      <button onclick="printBraille()"><i class="fas fa-print"></i> Print</button>
-    </section>
-
-    <button onclick="clearAll()" class="clear-btn"><i class="fas fa-trash"></i> Clear All</button>
+      <div id="chatMessages" class="chat-body"></div>
+      <input type="text" id="chatInput" placeholder="Ask Sanad..." />
+      <button onclick="sendSanadChat()">Send</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
