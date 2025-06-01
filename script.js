@@ -122,17 +122,71 @@ function printBraille() {
   w.print();
   w.close();
 }
+import {
+  Hands
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js";
+import {
+  Camera
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
 
-// Sign Language Text (placeholder)
-setInterval(() => {
-  if (stream) {
-    // Simulate detection
-    const words = ["Hello", "Pain", "Help", "Doctor", "Where", "Yes", "No"];
-    const output = document.getElementById("signTextOutput");
-    const random = Math.random();
-    if (random > 0.95) {
-      const word = words[Math.floor(Math.random() * words.length)];
-      output.innerText += " " + word;
-    }
+// إعداد MediaPipe Hands
+const hands = new Hands({
+  locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.5
+});
+
+hands.onResults(results => {
+  const output = document.getElementById("signTextOutput");
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    // مبدئيًا: نطبع بس "Hand Detected" كل مرة تنرصد يد
+    output.innerText = "✋ Hand detected (detection only)";
+  } else {
+    output.innerText = "";
   }
-}, 1000);
+});
+
+// تشغيل الكاميرا تلقائيًا
+const cameraFeed = document.getElementById("cameraFeed");
+const camera = new Camera(cameraFeed, {
+  onFrame: async () => {
+    await hands.send({ image: cameraFeed });
+  },
+  width: 640,
+  height: 480
+});
+camera.start();
+const hands = new Hands({
+  locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.5,
+});
+
+hands.onResults(results => {
+  const output = document.getElementById("signTextOutput");
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    output.innerText = "✋ Hand detected (detection only)";
+  } else {
+    output.innerText = "";
+  }
+});
+
+const cameraFeed = document.getElementById("cameraFeed");
+const camera = new Camera(cameraFeed, {
+  onFrame: async () => {
+    await hands.send({ image: cameraFeed });
+  },
+  width: 640,
+  height: 480
+});
+camera.start();
