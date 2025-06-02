@@ -1,98 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MediTalk</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>🩺 MediTalk Medical Translator</h1>
-  </header>
+  <header><h1>🩺 MediTalk – Communication for Better Care</h1></header>
 
   <main>
-    <!-- 🔤 Text Translation Section -->
-    <section class="translation-panel">
-      <h2>Text Translator 🌐</h2>
-      <textarea id="textInput" placeholder="Enter your text here..."></textarea>
-      <select id="languageSelect">
-        <option value="ar">Arabic</option>
-        <option value="en">English</option>
-        <option value="fr">French</option>
-        <option value="tr">Turkish</option>
-        <option value="id">Indonesian</option>
-        <option value="ru">Russian</option>
-        <option value="zh">Chinese</option>
-        <option value="de">German</option>
-        <option value="ms">Malay</option>
-        <option value="fa">Persian</option>
-        <option value="ur">Urdu</option>
-        <option value="bn">Bengali</option>
-      </select>
-      <div class="buttons">
-        <button onclick="translateText()">Translate</button>
-        <button onclick="startListening()">🎤 Voice</button>
-        <button onclick="speakTranslation()">🔊 Speak</button>
-        <button onclick="clearAll()">🧹 Clear</button>
+    <!-- Text Translation -->
+    <section class="translation">
+      <h2>🌐 Text Translation</h2>
+      <div class="side-by-side">
+        <div>
+          <textarea id="textInput" placeholder="Type text here..."></textarea>
+          <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="ar">Arabic</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="zh">Chinese</option>
+            <option value="tr">Turkish</option>
+            <option value="ru">Russian</option>
+            <option value="id">Indonesian</option>
+            <option value="ms">Malay</option>
+            <option value="fa">Persian</option>
+            <option value="ur">Urdu</option>
+            <option value="bn">Bengali</option>
+          </select>
+        </div>
+        <div>
+          <textarea id="translatedOutput" readonly placeholder="Translation will appear here..."></textarea>
+        </div>
       </div>
-      <div class="output-box">
-        <h3>Translated Output:</h3>
-        <p id="translatedOutput"></p>
-      </div>
+      <button onclick="translateText()">Translate</button>
+      <button onclick="startListening()">🎤 Voice</button>
+      <button onclick="speakTranslation()">🔊 Speak</button>
+      <button onclick="openSanadChat()">🤖 AI Chat</button>
+      <button onclick="clearAll()">❌ Clear</button>
     </section>
 
-    <!-- 🧠 AI Chat Section -->
-    <section class="ai-chat-panel">
-      <h2>Ask Sanad 🤖</h2>
-      <button onclick="openSanadChat()">Open AI Chat</button>
-      <div id="aiChatBox" style="display:none;">
-        <div id="chatMessages" class="chat-box"></div>
-        <input id="chatInput" placeholder="Ask Sanad something..." />
-        <button onclick="sendToSanad()">Send</button>
-      </div>
+    <!-- Sign Language -->
+    <section>
+      <h2>🖐️ Sign Language Translation</h2>
+      <div id="webcam-container"></div>
+      <div id="label-container"></div>
+      <button onclick="init()">📷 Start Camera</button>
     </section>
 
-    <!-- 🖐️ Sign Language Recognition Section -->
-    <section class="sign-panel">
-      <h2>Sign Language Translation 🖐️</h2>
-      <video id="cameraFeed" autoplay muted></video>
-      <div class="buttons">
-        <button onclick="startCamera()">📷 Start Camera</button>
-        <button onclick="stopCamera()">❌ Stop Camera</button>
-        <button onclick="takeSnapshot()">📸 Capture</button>
-        <button onclick="clearAll()">🧼 Clear</button>
-      </div>
+    <!-- OCR Image Translation -->
+    <section>
+      <h2>📸 Image/Text from File</h2>
+      <input type="file" id="imageUpload" accept="image/*" onchange="translateImage()" />
       <canvas id="snapshotCanvas" style="display:none;"></canvas>
-      <div class="output-box">
-        <h3>Detected Sign Language:</h3>
-        <p id="signTextOutput"></p>
-      </div>
-    </section>
-
-    <!-- 🖼️ Image Upload OCR -->
-    <section class="ocr-panel">
-      <h2>Image Translation 📸</h2>
-      <input type="file" id="imageUpload" accept="image/*" onchange="translateImage()">
       <p id="ocrResult"></p>
     </section>
 
-    <!-- 🧾 Braille Prescription -->
-    <section class="braille-panel">
-      <h2>Braille Prescription 🧾</h2>
-      <textarea id="brailleInput" placeholder="Enter medical instructions or prescription..."></textarea>
+    <!-- Braille Print -->
+    <section>
+      <h2>🧾 Braille Prescription</h2>
+      <textarea id="brailleInput" placeholder="Type prescription here..."></textarea>
       <button onclick="printBraille()">🖨️ Print in Braille</button>
     </section>
+
+    <!-- AI Chat Box -->
+    <div id="aiChatBox" style="display:none;">
+      <h3>Chat with Sanad 🤖</h3>
+      <div id="chatMessages"></div>
+      <input id="chatInput" placeholder="Ask something..." />
+      <button onclick="sendToSanad()">Send</button>
+    </div>
   </main>
 
-  <footer>
-    <p>Created by MediTalk Team © 2025</p>
-  </footer>
-  <!-- MediaPipe for Sign Language -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <footer><p>Created by MediTalk Team © 2025</p></footer>
 
-  <!-- Your main script -->
   <script src="script.js"></script>
 </body>
 </html>
