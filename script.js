@@ -1,22 +1,17 @@
-// Text Translation (using LibreTranslate)
+// Text translation using LibreTranslate
 async function translateText() {
-  const input = document.getElementById("textInput").value;
+  const text = document.getElementById("textInput").value;
   const lang = document.getElementById("languageSelect").value;
   const res = await fetch("https://libretranslate.de/translate", {
     method: "POST",
-    body: JSON.stringify({
-      q: input,
-      source: "auto",
-      target: lang,
-      format: "text"
-    }),
+    body: JSON.stringify({ q: text, source: "auto", target: lang }),
     headers: { "Content-Type": "application/json" }
   });
   const data = await res.json();
-  document.getElementById("translatedOutput").innerText = data.translatedText;
+  document.getElementById("translatedOutput").value = data.translatedText;
 }
 
-// Voice Input
+// Voice input
 function startListening() {
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = "en-US";
@@ -26,78 +21,38 @@ function startListening() {
   recognition.start();
 }
 
-// Speak Translation
+// Text-to-speech
 function speakTranslation() {
-  const msg = new SpeechSynthesisUtterance(document.getElementById("translatedOutput").innerText);
+  const msg = new SpeechSynthesisUtterance(document.getElementById("translatedOutput").value);
   speechSynthesis.speak(msg);
 }
 
-// AI Chat (Sanad)
+// AI chat
 function openSanadChat() {
   document.getElementById("aiChatBox").style.display = "block";
 }
-
-async function sendToSanad() {
+function sendToSanad() {
   const input = document.getElementById("chatInput").value;
-  const msgBox = document.getElementById("chatMessages");
-  msgBox.innerHTML += `<div><b>You:</b> ${input}</div>`;
-  document.getElementById("chatInput").value = "";
-
-  const reply = "I'm Sanad. I will answer soon..."; // Static reply for now
+  const chatBox = document.getElementById("chatMessages");
+  chatBox.innerHTML += `<div><b>You:</b> ${input}</div>`;
   setTimeout(() => {
-    msgBox.innerHTML += `<div><b>Sanad:</b> ${reply}</div>`;
+    chatBox.innerHTML += `<div><b>Sanad:</b> Sorry, I’m still learning!</div>`;
   }, 1000);
 }
 
-// Clear All
+// Clear fields
 function clearAll() {
   document.getElementById("textInput").value = "";
-  document.getElementById("translatedOutput").innerText = "";
-  document.getElementById("signTextOutput").innerText = "";
+  document.getElementById("translatedOutput").value = "";
+  document.getElementById("chatInput").value = "";
+  document.getElementById("chatMessages").innerHTML = "";
+  document.getElementById("ocrResult").innerText = "";
+  document.getElementById("brailleInput").value = "";
 }
 
-// Camera Controls
-let stream;
-
-async function startCamera() {
-  const video = document.getElementById("cameraFeed");
-  stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  video.srcObject = stream;
-}
-
-function stopCamera() {
-  const video = document.getElementById("cameraFeed");
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-    video.srcObject = null;
-  }
-}
-
-// Take Photo (for OCR)
-function takeSnapshot() {
-  const video = document.getElementById("cameraFeed");
-  const canvas = document.getElementById("snapshotCanvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  canvas.style.display = "block";
-  performOCR(canvas);
-}
-
-// OCR (Tesseract.js)
-function performOCR(canvas) {
-  document.getElementById("ocrResult").innerText = "Reading image...";
-  Tesseract.recognize(canvas, "eng").then(({ data: { text } }) => {
-    document.getElementById("ocrResult").innerText = text;
-  });
-}
-
-// Image Upload Translation
+// OCR image translation
 function translateImage() {
-  const input = document.getElementById("imageUpload");
-  const file = input.files[0];
+  const file = document.getElementById("imageUpload").files[0];
   const reader = new FileReader();
   reader.onload = function () {
     const img = new Image();
@@ -107,86 +62,62 @@ function translateImage() {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
-      performOCR(canvas);
+      canvas.style.display = "block";
+      Tesseract.recognize(canvas, "eng").then(({ data: { text } }) => {
+        document.getElementById("ocrResult").innerText = text;
+      });
     };
     img.src = reader.result;
   };
   if (file) reader.readAsDataURL(file);
 }
 
-// Braille Print (Basic Mock)
+// Braille print
 function printBraille() {
   const content = document.getElementById("brailleInput").value;
-  const w = window.open();
-  w.document.write(`<pre style="font-size: 20px;">Braille: ${content}</pre>`);
-  w.print();
-  w.close();
+  const win = window.open("", "", "width=600,height=400");
+  win.document.write(`<pre style="font-size:20px;">${content}</pre>`);
+  win.print();
+  win.close();
 }
-import {
-  Hands
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js";
-import {
-  Camera
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
 
-// إعداد MediaPipe Hands
-const hands = new Hands({
-  locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-});
+// Teachable Machine Sign Language
+const URL = "https://teachablemachine.withgoogle.com/models/Dm1vAU2b_/"; // put your model URL
+let model, webcam, labelContainer, maxPredictions;
 
-hands.setOptions({
-  maxNumHands: 1,
-  modelComplexity: 1,
-  minDetectionConfidence: 0.7,
-  minTrackingConfidence: 0.5
-});
+async function init() {
+  const modelURL = URL + "model.json";
+  const metadataURL = URL + "metadata.json";
 
-hands.onResults(results => {
-  const output = document.getElementById("signTextOutput");
-  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-    // مبدئيًا: نطبع بس "Hand Detected" كل مرة تنرصد يد
-    output.innerText = "✋ Hand detected (detection only)";
-  } else {
-    output.innerText = "";
+  model = await tmImage.load(modelURL, metadataURL);
+  maxPredictions = model.getTotalClasses();
+
+  const flip = true;
+  webcam = new tmImage.Webcam(200, 200, flip);
+  await webcam.setup();
+  await webcam.play();
+  window.requestAnimationFrame(loop);
+
+  document.getElementById("webcam-container").appendChild(webcam.canvas);
+  labelContainer = document.getElementById("label-container");
+  for (let i = 0; i < maxPredictions; i++) {
+    labelContainer.appendChild(document.createElement("div"));
   }
-});
+}
 
-// تشغيل الكاميرا تلقائيًا
-const cameraFeed = document.getElementById("cameraFeed");
-const camera = new Camera(cameraFeed, {
-  onFrame: async () => {
-    await hands.send({ image: cameraFeed });
-  },
-  width: 640,
-  height: 480
-});
-camera.start();
-const hands = new Hands({
-  locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-});
+async function loop() {
+  webcam.update();
+  await predict();
+  window.requestAnimationFrame(loop);
+}
 
-hands.setOptions({
-  maxNumHands: 1,
-  modelComplexity: 1,
-  minDetectionConfidence: 0.7,
-  minTrackingConfidence: 0.5,
-});
-
-hands.onResults(results => {
-  const output = document.getElementById("signTextOutput");
-  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-    output.innerText = "✋ Hand detected (detection only)";
-  } else {
-    output.innerText = "";
-  }
-});
-
-const cameraFeed = document.getElementById("cameraFeed");
-const camera = new Camera(cameraFeed, {
-  onFrame: async () => {
-    await hands.send({ image: cameraFeed });
-  },
-  width: 640,
-  height: 480
-});
-camera.start();
+async function predict() {
+  const prediction = await model.predict(webcam.canvas);
+  labelContainer.innerHTML = "";
+  prediction.forEach(p => {
+    const classPrediction = `${p.className}: ${p.probability.toFixed(2)}`;
+    const div = document.createElement("div");
+    div.textContent = classPrediction;
+    labelContainer.appendChild(div);
+  });
+}
