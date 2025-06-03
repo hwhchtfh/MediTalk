@@ -1,67 +1,49 @@
-// Translate Text using LibreTranslate
 async function translateText() {
   const input = document.getElementById("inputText").value;
-  const lang = document.getElementById("targetLang").value;
-  const res = await fetch("https://libretranslate.de/translate", {
-    method: "POST",
-    body: JSON.stringify({
-      q: input,
-      source: "auto",
-      target: lang,
-      format: "text"
-    }),
-    headers: { "Content-Type": "application/json" }
-  });
+  const sourceLang = document.getElementById("sourceLang").value;
+  const targetLang = document.getElementById("targetLang").value;
+  const output = document.getElementById("translatedOutput");
+
+  const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(input)}&langpair=${sourceLang}|${targetLang}`);
   const data = await res.json();
-  document.getElementById("outputText").value = data.translatedText;
+  output.innerText = data.responseData.translatedText;
 }
 
-// Sign Language via Teachable Machine
-const URL = "https://teachablemachine.withgoogle.com/models/Dm1vAU2b_/";
+function printBraille() {
+  const text = document.getElementById("brailleInput").value.toLowerCase();
+  const brailleMap = {
+    'a':'⠁','b':'⠃','c':'⠉','d':'⠙','e':'⠑','f':'⠋','g':'⠛','h':'⠓','i':'⠊','j':'⠚',
+    'k':'⠅','l':'⠇','m':'⠍','n':'⠝','o':'⠕','p':'⠏','q':'⠟','r':'⠗','s':'⠎','t':'⠞',
+    'u':'⠥','v':'⠧','w':'⠺','x':'⠭','y':'⠽','z':'⠵',' ':' '
+  };
+  const output = text.split('').map(ch => brailleMap[ch] || '?').join('');
+  document.getElementById("brailleOutput").innerText = output;
+}
 
-let model, webcam, labelContainer, maxPredictions;
-
-async function init() {
+function initTeachableModel() {
+  const URL = "https://teachablemachine.withgoogle.com/models/Dm1vAU2b/";
   const modelURL = URL + "model.json";
   const metadataURL = URL + "metadata.json";
 
-  model = await tmImage.load(modelURL, metadataURL);
-  maxPredictions = model.getTotalClasses();
+  let model, webcam, labelContainer;
 
-  webcam = new tmImage.Webcam(200, 200, true);
-  await webcam.setup();
-  await webcam.play();
-  window.requestAnimationFrame(loop);
+  tmImage.load(modelURL, metadataURL).then(loadedModel => {
+    model = loadedModel;
+    const flip = true;
+    webcam = new tmImage.Webcam(200, 200, flip);
+    webcam.setup().then(() => {
+      webcam.play();
+      window.requestAnimationFrame(loop);
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      labelContainer = document.getElementById("label-container");
+    });
 
-  document.getElementById("webcam-container").appendChild(webcam.canvas);
-  labelContainer = document.getElementById("label-container");
-  for (let i = 0; i < maxPredictions; i++) {
-    labelContainer.appendChild(document.createElement("div"));
-  }
-}
-
-async function loop() {
-  webcam.update();
-  await predict();
-  window.requestAnimationFrame(loop);
-}
-
-async function predict() {
-  const prediction = await model.predict(webcam.canvas);
-  labelContainer.innerHTML = "";
-  prediction.forEach(p => {
-    const text = p.className + ": " + (p.probability * 100).toFixed(1) + "%";
-    const div = document.createElement("div");
-    div.textContent = text;
-    labelContainer.appendChild(div);
+    function loop() {
+      webcam.update();
+      model.predict(webcam.canvas).then(predictions => {
+        labelContainer.innerText = predictions[0].className + " (" + predictions[0].probability.toFixed(2) + ")";
+        window.requestAnimationFrame(loop);
+      });
+    }
   });
-}
-
-// Braille mock print
-function printBraille() {
-  const content = document.getElementById("brailleText").value;
-  const win = window.open("", "", "width=600,height=400");
-  win.document.write("<pre style='font-size: 30px;'>⠿ " + content + "</pre>");
-  win.document.close();
-  win.print();
 }
