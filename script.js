@@ -1,27 +1,34 @@
-// Text translation (auto-triggered)
-document.getElementById("textInput").addEventListener("input", async () => {
-  const input = document.getElementById("textInput").value;
-  const lang = document.getElementById("languageSelect").value;
+// 🔤 Text Translation
+async function translate() {
+  const input = document.getElementById("inputText").value;
+  const targetLang = document.getElementById("targetLang").value;
+
   const res = await fetch("https://libretranslate.de/translate", {
     method: "POST",
-    body: JSON.stringify({ q: input, source: "auto", target: lang, format: "text" }),
+    body: JSON.stringify({
+      q: input,
+      source: "auto",
+      target: targetLang,
+      format: "text"
+    }),
     headers: { "Content-Type": "application/json" }
   });
-  const data = await res.json();
-  document.getElementById("translatedOutput").innerText = data.translatedText;
-});
 
-// Braille print
-function printBraille() {
-  const content = document.getElementById("brailleInput").value;
-  const brailleContent = content.normalize("NFD"); // Fake for demonstration
-  const w = window.open();
-  w.document.write(`<pre style="font-size: 20px;">${brailleContent}</pre>`);
-  w.print();
-  w.close();
+  const data = await res.json();
+  document.getElementById("outputText").value = data.translatedText;
 }
 
-// Teachable Machine (Sign Language)
+// 🧾 Braille Print (simulate dots)
+function printBraille() {
+  const content = document.getElementById("brailleInput").value;
+  const dots = content.replace(/./g, "⠿"); // simulate Braille with block dots
+  const win = window.open("", "", "width=400,height=400");
+  win.document.write(`<pre style="font-size: 30px;">${dots}</pre>`);
+  win.print();
+  win.close();
+}
+
+// 🖐️ Sign Language using Teachable Machine
 const URL = "https://teachablemachine.withgoogle.com/models/Dm1vAU2b/";
 
 let model, webcam, labelContainer, maxPredictions;
@@ -33,8 +40,7 @@ async function init() {
   model = await tmImage.load(modelURL, metadataURL);
   maxPredictions = model.getTotalClasses();
 
-  const flip = true;
-  webcam = new tmImage.Webcam(200, 200, flip);
+  webcam = new tmImage.Webcam(200, 200, true);
   await webcam.setup();
   await webcam.play();
   window.requestAnimationFrame(loop);
