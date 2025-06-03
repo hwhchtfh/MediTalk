@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>MediTalk</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
 </head>
 <body>
-  <header><h1>🩺 MediTalk Medical Translator</h1></header>
+  <header>
+    <h1>🩺 MediTalk Translator</h1>
+  </header>
 
-  <!-- 🔤 الترجمة النصية -->
+  <!-- الترجمة الفورية -->
   <section>
     <h2>Text Translator 🌐</h2>
     <div class="translate-box">
       <textarea id="inputText" placeholder="Enter text..."></textarea>
-      <textarea id="outputText" placeholder="Translated..." readonly></textarea>
+      <textarea id="outputText" placeholder="Translation appears here..." readonly></textarea>
     </div>
     <select id="targetLang">
       <option value="ar">Arabic</option>
@@ -23,26 +25,36 @@
       <option value="fr">French</option>
       <option value="tr">Turkish</option>
       <option value="id">Indonesian</option>
+      <option value="ru">Russian</option>
+      <option value="zh">Chinese</option>
+      <option value="de">German</option>
+      <option value="ms">Malay</option>
+      <option value="fa">Persian</option>
+      <option value="ur">Urdu</option>
+      <option value="bn">Bengali</option>
     </select>
     <button onclick="translate()">Translate</button>
   </section>
 
-  <!-- 🧾 طباعة برايل -->
+  <!-- لغة الإشارة -->
   <section>
-    <h2>Braille Print 🧾</h2>
-    <textarea id="brailleInput" placeholder="Enter Braille text..."></textarea>
-    <button onclick="printBraille()">🖨️ Print Mock</button>
-  </section>
-
-  <!-- 🖐️ ترجمة لغة الإشارة -->
-  <section>
-    <h2>Sign Language Recognition 🖐️</h2>
-    <button onclick="init()">Start Sign Detection</button>
+    <h2>Sign Language Translator 🤟</h2>
+    <button onclick="init()">Start Camera</button>
     <div id="webcam-container"></div>
     <div id="label-container"></div>
   </section>
 
-  <footer><p>Created by MediTalk Team © 2025</p></footer>
+  <!-- طباعة بطريقة برايل -->
+  <section>
+    <h2>Braille Print 🧾</h2>
+    <textarea id="brailleInput" placeholder="Enter text for Braille print"></textarea>
+    <button onclick="printBraille()">🖨️ Print Braille</button>
+  </section>
+
+  <footer>
+    <p>&copy; MediTalk 2025</p>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
